@@ -738,9 +738,9 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
   // in case of using Swift and embedded frameworks, resources included not in main bundle,
   // but in framework bundle
   if (!path) {
-      path = [[[self class] frameworkBundle] pathForResource:@"YTPlayerView-iframe-player"
-                                                     ofType:@"html"
-                                                inDirectory:@"Assets"];
+      path = [[[self class] assetsBundle] pathForResource:@"YTPlayerView-iframe-player"
+                                                   ofType:@"html"
+                                              inDirectory:@"Assets"];
   }
     
   NSString *embedHTMLTemplate =
@@ -914,15 +914,17 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
   self.webView = nil;
 }
 
-+ (NSBundle *)frameworkBundle {
-    static NSBundle* frameworkBundle = nil;
++ (NSBundle *)assetsBundle {
+    static NSBundle* assetsBundle = nil;
+    
     static dispatch_once_t predicate;
     dispatch_once(&predicate, ^{
-        NSString* mainBundlePath = [[NSBundle bundleForClass:[self class]] resourcePath];
-        NSString* frameworkBundlePath = [mainBundlePath stringByAppendingPathComponent:@"Assets.bundle"];
-        frameworkBundle = [NSBundle bundleWithPath:frameworkBundlePath];
+        NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:@"org.cocoapods.youtube-ios-player-helper"];
+        NSString *assetsBundlePath = [frameworkBundle pathForResource:@"Assets" ofType:@"bundle"];
+        assetsBundle = [NSBundle bundleWithPath:assetsBundlePath];
     });
-    return frameworkBundle;
+
+    return assetsBundle;
 }
 
 @end
