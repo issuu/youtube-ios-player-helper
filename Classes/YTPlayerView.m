@@ -916,10 +916,15 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
 
 + (NSBundle *)assetsBundle {
     static NSBundle* assetsBundle = nil;
-    
+
     static dispatch_once_t predicate;
     dispatch_once(&predicate, ^{
-        NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:@"org.cocoapods.youtube-ios-player-helper"];
+        NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:@"com.youtube.youtube-ios-player-helper"];
+        if (!frameworkBundle) {
+            // The identifier is different in case the framework is installed via Cocoapods
+            frameworkBundle = [NSBundle bundleWithIdentifier:@"org.cocoapods.youtube-ios-player-helper"];
+        }
+
         NSString *assetsBundlePath = [frameworkBundle pathForResource:@"Assets" ofType:@"bundle"];
         assetsBundle = [NSBundle bundleWithPath:assetsBundlePath];
     });
