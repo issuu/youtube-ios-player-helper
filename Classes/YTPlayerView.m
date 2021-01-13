@@ -518,6 +518,11 @@ NSString static *const kYTPlayerSyndicationRegexPattern = @"^https://tpc.googles
 decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
 decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
   NSURLRequest *request = navigationAction.request;
+
+  if ([self isEqualToOrigin:request.URL]) {
+    return decisionHandler(WKNavigationActionPolicyAllow);
+  }
+
   if ([request.URL.scheme isEqual:@"ytplayer"]) {
     [self notifyDelegateOfYouTubeCallbackUrl:request.URL];
     decisionHandler(WKNavigationActionPolicyCancel);
@@ -622,7 +627,7 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
   // since it is set as the webView.baseURL.
   // In that case we want to let it load itself in the webView instead of trying
   // to load it in a browser.
-  if ([[url.host lowercaseString] isEqualToString:[self.originURL.host lowercaseString]]) {
+  if ([self isEqualToOrigin:url]) {
     return YES;
   }
   // Usually this means the user has clicked on the YouTube logo or an error message in the
@@ -930,6 +935,11 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     });
 
     return assetsBundle;
+}
+
+- (BOOL)isEqualToOrigin:(NSURL *)url
+{
+    return [[url.host lowercaseString] isEqualToString:[self.originURL.host lowercaseString]];
 }
 
 @end
